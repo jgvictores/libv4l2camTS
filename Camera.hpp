@@ -11,8 +11,8 @@
 #ifndef __CAMERA__HPP__
 #define __CAMERA__HPP__
 
-#define USE_OPENCV 0
-#define USE_LOOKUP 1
+#define USE_OPENCV
+#define USE_LOOKUP
 
 #ifdef USE_OPENCV
 #include <cv.h>
@@ -38,6 +38,7 @@ namespace scr
 class Camera {
 private:
     timeval timestampStructure;
+    bool gotFirstImage;
 
     yarp::os::Semaphore ready;
     unsigned char *data;
@@ -86,7 +87,7 @@ public:
     void  StartCamera(const char *name, int w, int h, int fps=30);
     ~Camera();
 
-    unsigned char *Get();    //deprecated
+    unsigned char *Get();
     bool Update(unsigned int t=100, int timeout_ms=500); //better  (t=0.1ms, in usecs)
     bool Update(Camera *c2, unsigned int t=100, int timeout_ms=500);
 
@@ -94,7 +95,7 @@ public:
     void toIplImage(IplImage *im);
     void toGrayScaleIplImage(IplImage *im);
     void toGrayScaleMat(cv::Mat& im);
-    void toMat (cv::Mat& im, double& ts);
+    bool toMat(cv::Mat& im, double& ts);
 #endif
 
 

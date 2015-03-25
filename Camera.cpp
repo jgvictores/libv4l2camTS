@@ -96,6 +96,7 @@ void Camera::genYUVtoRGBLookups()
 #endif
 Camera::Camera(const char *n, int w, int h, int f) {
     this->initialised = false;
+    this->gotFirstImage = false;
     this->StartCamera(n, w, h, f);
 }
 
@@ -663,6 +664,7 @@ unsigned char *Camera::Get() {
     if(-1 == xioctl (fd, VIDIOC_QBUF, &buf))
         return 0; //errno_exit ("VIDIOC_QBUF");
 
+    this->gotFirstImage = true;
     return data;
 
 }
@@ -793,7 +795,9 @@ void Camera::toGrayScaleIplImage(IplImage *l){
     }
 }
 
-void Camera::toMat(cv::Mat& m, double& ts) {
+bool Camera::toMat(cv::Mat& m, double& ts) {
+
+    if ( ! this->gotFirstImage ) return false;
 
     ready.wait();
 
@@ -868,6 +872,7 @@ void Camera::toMat(cv::Mat& m, double& ts) {
 
     ready.post();
 
+    return true;
 }
 
 void Camera::toGrayScaleMat(cv::Mat& m)

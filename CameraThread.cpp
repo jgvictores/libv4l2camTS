@@ -21,8 +21,8 @@ void CameraThread::run() {
     }
 }
 
-void CameraThread::toMat(cv::Mat& im, double& ts) {
-  c->toMat(im,ts);
+bool CameraThread::toMat(cv::Mat& im, double& ts) {
+  return c->toMat(im,ts);
 }
 
 }  // namespace scr

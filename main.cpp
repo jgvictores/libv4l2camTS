@@ -64,8 +64,8 @@ int main() {
     while(TRUE){
 
         // conversion
-        c0.toMat(frame_0,ts0);
-        c1.toMat(frame_1,ts1);
+        if( ! c0.toMat(frame_0,ts0) ) continue;  //-- Returns false until got first image-
+        if( ! c1.toMat(frame_1,ts1) ) continue;  //-- Returns false until got first image-
 
         // check if timestamps are close enough
         if( fabs(ts0-ts1) > 0.020 )
