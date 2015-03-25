@@ -1,5 +1,5 @@
 
-#include "libcam.h"
+#include "Camera.hpp"
 
 #include <yarp/os/Thread.h>
 #include <yarp/os/Semaphore.h>

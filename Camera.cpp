@@ -42,7 +42,7 @@
 
 
 
-#include "libcam.h"
+#include "Camera.hpp"
 
 #ifdef USE_OPENCV
 #include <cv.h>
