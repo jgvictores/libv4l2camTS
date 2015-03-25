@@ -3,7 +3,7 @@
 /*
  * Copyright (C) 2009 Giacomo Spigler
  * 2013 - George Jordanov - improve in performance for HSV conversion and improvements
- * 2015 - Juan G Victores - enable timestamp on toMat
+ * 2015 - Juan G Victores - enable timestamp on toMat, protect data and add semaphore, namespace
  *
  * CopyPolicy: Released under the terms of the GNU GPL v3.0.
  */

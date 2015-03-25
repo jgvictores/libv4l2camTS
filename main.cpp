@@ -1,5 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
+/* Copyright (C) 2015 Juan G Victores & Santiago Morante */
+
 #include <stdio.h>
 #include <string>
 
@@ -68,7 +70,7 @@ int main() {
         if( ! c1.toMat(frame_1,ts1) ) continue;  //-- Returns false until got first image-
 
         // check if timestamps are close enough
-        if( fabs(ts0-ts1) > 0.020 )
+        if( fabs(ts0-ts1) > (0.020) )
             continue;
 
         // Save frame to video
