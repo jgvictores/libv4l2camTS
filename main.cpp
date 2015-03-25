@@ -5,7 +5,7 @@
  */
 
 #include <stdio.h>
-#include "libcam.h"
+#include "CameraThread.hpp"
 #include "opencv/cv.h"
 #include "opencv/highgui.h"
 #include <string>
@@ -42,9 +42,11 @@ int main() {
     capture_0.release();
     capture_1.release();
 
-    Camera c0("/dev/video0", width_0, height_0, FPS);  //-- optional fps at end, set 14 for minoru
-    Camera c1("/dev/video1", width_1, height_1, FPS);  //-- optional fps at end, set 14 for minoru
+    CameraThread c0("/dev/video0", width_0, height_0, FPS);  //-- optional fps at end, set 14 for minoru
+    CameraThread c1("/dev/video1", width_1, height_1, FPS);  //-- optional fps at end, set 14 for minoru
 
+    c0.start();
+    c1.start();
 
     string FILENAME_VIDEO_0 = "feed_0_.avi";
     string FILENAME_VIDEO_1 = "feed_1_.avi";
@@ -67,21 +69,12 @@ int main() {
 
     while(TRUE){
 
-        // update
-        if( ! c0.Update() ) {
-            printf("[error] update timeout c0.\n");
-            return 1;
-        }
-        if( ! c1.Update() ) {
-            printf("[error] update timeout c1.\n");
-            return 1;
-        }
-
-
         // conversion
         c0.toMat(frame_0,ts0);
         c1.toMat(frame_1,ts1);
 
+        if( fabs(ts0-ts1) > 0.015 )
+            continue;
 
         // Save frame to video
         video_0.write(frame_0);
@@ -99,6 +92,8 @@ int main() {
         if (k == 27){ // ESC
             capture_0.release();
             capture_1.release();
+            c0.stop();
+            c1.stop();
             cv::destroyAllWindows();
             cout << "[INFO] Quitting program!" << endl;
             break;
