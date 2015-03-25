@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 2.8.9)
 
-set(KEYWORD "example")
+set(KEYWORD "syncedCameraRecorder")
 
 # Start a project.
 project(${KEYWORD})
