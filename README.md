@@ -1,2 +1,2 @@
-# libv4l2camTS
-A spin off libv4l2cam that includes timestamps.
+# syncedCameraRecorder
+Grabs camera streams and compares timestamp for recording.
