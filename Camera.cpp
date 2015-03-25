@@ -40,14 +40,7 @@
 
 #define CLEAR(x) memset (&(x), 0, sizeof (x))
 
-
-
 #include "Camera.hpp"
-
-#ifdef USE_OPENCV
-#include <cv.h>
-#include "opencv2/core/core.hpp"
-#endif
 
 static void errno_exit (const char *           s)
 {
