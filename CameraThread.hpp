@@ -1,9 +1,13 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
+#ifndef __CAMERA_THREAD__HPP__
+#define __CAMERA_THREAD__HPP__
+
 #include "Camera.hpp"
 
 #include <yarp/os/Thread.h>
-#include <yarp/os/Semaphore.h>
+
+#include <unistd.h>  //-- usleep
 
 namespace scr
 {
@@ -23,3 +27,5 @@ class CameraThread : public yarp::os::Thread {
 };
 
 }  // namespace scr
+
+#endif  // __CAMERA_THREAD__HPP__

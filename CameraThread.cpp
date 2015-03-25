@@ -1,3 +1,5 @@
+// -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
+
 #include "CameraThread.hpp"
 
 namespace scr
@@ -15,8 +17,7 @@ CameraThread::~CameraThread() {
 
 void CameraThread::run() {
     while( ! this->isStopping() ) {
-        if( ! c->Update() )
-            continue;
+        c->Get();
     }
 }
 

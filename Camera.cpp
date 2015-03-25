@@ -651,11 +651,14 @@ unsigned char *Camera::Get() {
             return 0; //errno_exit ("VIDIOC_DQBUF");
         }
     }
-    gettimeofday(&timestamp,NULL);
+    gettimeofday(&timestampStructure,NULL);
 
     assert(buf.index < (unsigned int)n_buffers);
 
+    ready.wait();
     memcpy(data, (unsigned char *)buffers[buf.index].start, buffers[buf.index].length);
+    this->timestamp = double(this->timestampStructure.tv_sec + this->timestampStructure.tv_usec*1e-6);
+    ready.post();
 
     if(-1 == xioctl (fd, VIDIOC_QBUF, &buf))
         return 0; //errno_exit ("VIDIOC_QBUF");
@@ -789,76 +792,84 @@ void Camera::toGrayScaleIplImage(IplImage *l){
         }
     }
 }
+
 void Camera::toMat(cv::Mat& m, double& ts) {
-  ts = double(this->timestamp.tv_sec + this->timestamp.tv_usec*1e-6);
-  unsigned char *m_ = (unsigned char *)(m.data);
 
+    ready.wait();
 
-  for(int x=0; x<w2; x++) {
-    for(int y=0; y<height; y++) {
-      int y0, y1, u, v; //y0 u y1 v
+    ts = this->timestamp;
 
-      int i=(y*w2+x)*4;
-      y0=data[i];
-      u=data[i+1];
-      y1=data[i+2];
-      v=data[i+3];
+    unsigned char *m_ = (unsigned char *)(m.data);
+
+    for(int x=0; x<w2; x++) {
+        for(int y=0; y<height; y++) {
+            int y0, y1, u, v; //y0 u y1 v
+
+            int i=(y*w2+x)*4;
+            y0=data[i];
+            u=data[i+1];
+            y1=data[i+2];
+            v=data[i+3];
             
 #ifndef USE_LOOKUP
-      int r, g, b;
+            int r, g, b;
 
-      r = y0 + (1.370705 * (v-128));
-      g = y0 - (0.698001 * (v-128)) - (0.337633 * (u-128));
-      b = y0 + (1.732446 * (u-128));
+            r = y0 + (1.370705 * (v-128));
+            g = y0 - (0.698001 * (v-128)) - (0.337633 * (u-128));
+            b = y0 + (1.732446 * (u-128));
 
-      if(r > 255) r = 255;
-      if(g > 255) g = 255;
-      if(b > 255) b = 255;
-      if(r < 0) r = 0;
-      if(g < 0) g = 0;
-      if(b < 0) b = 0;
+            if(r > 255) r = 255;
+            if(g > 255) g = 255;
+            if(b > 255) b = 255;
+            if(r < 0) r = 0;
+            if(g < 0) g = 0;
+            if(b < 0) b = 0;
 
-      i = y*m.cols*m.channels() + x*2*m.channels();  
-      m_[i] = (unsigned char)(b); //B
-      m_[i+1] = (unsigned char)(g); //G
-      m_[i+2] = (unsigned char)(r); //R
+            i = y*m.cols*m.channels() + x*2*m.channels();
+            m_[i] = (unsigned char)(b); //B
+            m_[i+1] = (unsigned char)(g); //G
+            m_[i+2] = (unsigned char)(r); //R
 
-      r = y1 + (1.370705 * (v-128));
-      g = y1 - (0.698001 * (v-128)) - (0.337633 * (u-128));
-      b = y1 + (1.732446 * (u-128));
+            r = y1 + (1.370705 * (v-128));
+            g = y1 - (0.698001 * (v-128)) - (0.337633 * (u-128));
+            b = y1 + (1.732446 * (u-128));
 
-      if(r > 255) r = 255;
-      if(g > 255) g = 255;
-      if(b > 255) b = 255;
-      if(r < 0) r = 0;
-      if(g < 0) g = 0;
-      if(b < 0) b = 0;
+            if(r > 255) r = 255;
+            if(g > 255) g = 255;
+            if(b > 255) b = 255;
+            if(r < 0) r = 0;
+            if(g < 0) g = 0;
+            if(b < 0) b = 0;
 
-      m_[i+3] = (unsigned char)(b); //B
-      m_[i+4] = (unsigned char)(g); //G
-      m_[i+5] = (unsigned char)(r); //R
+            m_[i+3] = (unsigned char)(b); //B
+            m_[i+4] = (unsigned char)(g); //G
+            m_[i+5] = (unsigned char)(r); //R
 #else
-      int g;
-      
-      i = y*m.cols*m.channels() + x*2*m.channels();  
+            int g;
 
-      g=y2u[y0][u] + y2v[y0][v];
-      if(g>255){g=255;}
-      if(g<0){g=0;}
-      m_[i] = yu[y0][u];
-      m_[i+1] = (unsigned char)g;
-      m_[i+2] = yv[y0][v];
-      
-      g=y2u[y1][u] + y2v[y1][v];
-      if(g>255){g=255;}
-      if(g<0){g=0;}
-      m_[i+3] = yu[y1][u];
-      m_[i+4] = g;
-      m_[i+5] = yv[y1][v];
+            i = y*m.cols*m.channels() + x*2*m.channels();
+
+            g=y2u[y0][u] + y2v[y0][v];
+            if(g>255){g=255;}
+            if(g<0){g=0;}
+            m_[i] = yu[y0][u];
+            m_[i+1] = (unsigned char)g;
+            m_[i+2] = yv[y0][v];
+
+            g=y2u[y1][u] + y2v[y1][v];
+            if(g>255){g=255;}
+            if(g<0){g=0;}
+            m_[i+3] = yu[y1][u];
+            m_[i+4] = g;
+            m_[i+5] = yv[y1][v];
 #endif
+        }
     }
-  }
-}   
+
+    ready.post();
+
+}
+
 void Camera::toGrayScaleMat(cv::Mat& m)
 {   
     unsigned char *m_ = (unsigned char *)(m.data);

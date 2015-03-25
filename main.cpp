@@ -67,7 +67,8 @@ int main() {
         c0.toMat(frame_0,ts0);
         c1.toMat(frame_1,ts1);
 
-        if( fabs(ts0-ts1) > 0.015 )
+        // check if timestamps are close enough
+        if( fabs(ts0-ts1) > 0.020 )
             continue;
 
         // Save frame to video

@@ -19,6 +19,8 @@
 #include "opencv2/core/core.hpp"
 #endif
 
+#include <yarp/os/Semaphore.h>
+
 struct buffer {
         void *                  start;
         size_t                  length;
@@ -35,7 +37,12 @@ namespace scr
 
 class Camera {
 private:
-    timeval timestamp;
+    timeval timestampStructure;
+
+    yarp::os::Semaphore ready;
+    unsigned char *data;
+    double timestamp;
+
     void Open();
     void Close();
 
@@ -65,8 +72,6 @@ public:
     int fps;
 
     int w2;
-
-    unsigned char *data;
 
     io_method io;
     int fd;
