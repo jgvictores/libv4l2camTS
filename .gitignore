@@ -1,28 +1,33 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+/CMakeLists.txt.user
+/build/CMakeCache.txt
+/build/CMakeFiles/2.8.12.2/CMakeCCompiler.cmake
+/build/CMakeFiles/2.8.12.2/CMakeCXXCompiler.cmake
+/build/CMakeFiles/2.8.12.2/CMakeDetermineCompilerABI_C.bin
+/build/CMakeFiles/2.8.12.2/CMakeDetermineCompilerABI_CXX.bin
+/build/CMakeFiles/2.8.12.2/CMakeSystem.cmake
+/build/CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c
+/build/CMakeFiles/2.8.12.2/CompilerIdC/a.out
+/build/CMakeFiles/2.8.12.2/CompilerIdCXX/CMakeCXXCompilerId.cpp
+/build/CMakeFiles/2.8.12.2/CompilerIdCXX/a.out
+/build/CMakeFiles/CMakeDirectoryInformation.cmake
+/build/CMakeFiles/CMakeOutput.log
+/build/CMakeFiles/Makefile.cmake
+/build/CMakeFiles/Makefile2
+/build/CMakeFiles/TargetDirectories.txt
+/build/CMakeFiles/cmake.check_cache
+/build/CMakeFiles/example.dir/CXX.includecache
+/build/CMakeFiles/example.dir/DependInfo.cmake
+/build/CMakeFiles/example.dir/build.make
+/build/CMakeFiles/example.dir/cmake_clean.cmake
+/build/CMakeFiles/example.dir/depend.internal
+/build/CMakeFiles/example.dir/depend.make
+/build/CMakeFiles/example.dir/flags.make
+/build/CMakeFiles/example.dir/libcam.cpp.o
+/build/CMakeFiles/example.dir/link.txt
+/build/CMakeFiles/example.dir/main.cpp.o
+/build/CMakeFiles/example.dir/progress.make
+/build/CMakeFiles/progress.marks
+/build/Makefile
+/build/cmake_install.cmake
+/build/example
+/build/example.cbp
