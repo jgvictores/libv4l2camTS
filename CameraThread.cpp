@@ -1,5 +1,8 @@
 #include "CameraThread.hpp"
 
+namespace scr
+{
+
 CameraThread::CameraThread(const char *name, int w, int h, int fps) {
     c = new Camera(name, w, h, fps);
     m = cv::Mat::zeros(h, w, CV_8UC3);
@@ -20,3 +23,5 @@ void CameraThread::run() {
 void CameraThread::toMat(cv::Mat& im, double& ts) {
   c->toMat(im,ts);
 }
+
+}  // namespace scr

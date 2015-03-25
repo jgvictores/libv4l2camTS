@@ -30,6 +30,8 @@ typedef enum {
 	IO_METHOD_USERPTR
 } io_method;
 
+namespace scr
+{
 
 class Camera {
 private:
@@ -119,5 +121,6 @@ public:
 
 };
 
+}  // namespace scr
 
 #endif  // __CAMERA__HPP__

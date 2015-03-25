@@ -69,6 +69,10 @@ static int xioctl(int fd, int request, void *arg)
 
         return r;
 }
+
+namespace scr
+{
+
 #ifdef USE_LOOKUP
 void Camera::genYUVtoRGBLookups()
 {
@@ -1114,3 +1118,4 @@ int Camera::setSharpness(int v) {
   return 1;
 }
 
+}  // namespace scr

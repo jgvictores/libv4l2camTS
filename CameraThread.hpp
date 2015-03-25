@@ -5,6 +5,9 @@
 #include <yarp/os/Thread.h>
 #include <yarp/os/Semaphore.h>
 
+namespace scr
+{
+
 class CameraThread : public yarp::os::Thread {
     public:
         CameraThread(const char *name, int w, int h, int fps=30);
@@ -18,3 +21,5 @@ class CameraThread : public yarp::os::Thread {
         cv::Mat m;
         double ts;
 };
+
+}  // namespace scr
