@@ -36,89 +36,89 @@ typedef enum {
 
 class Camera {
 private:
-  timeval timestamp;
-  void Open();
-  void Close();
+    timeval timestamp;
+    void Open();
+    void Close();
 
-  void Init();
-  void UnInit();
+    void Init();
+    void UnInit();
 
-  void Start();
-  void Stop();
+    void Start();
+    void Stop();
 
-  void init_userp(unsigned int buffer_size);
-  void init_mmap();
-  void init_read(unsigned int buffer_size);
+    void init_userp(unsigned int buffer_size);
+    void init_mmap();
+    void init_read(unsigned int buffer_size);
 
-  bool initialised;
+    bool initialised;
 #ifdef USE_LOOKUP
     void genYUVtoRGBLookups();
     unsigned char yv[256][256];
     unsigned char yu[256][256];
-             int y2v[256][256];
-             int y2u[256][256];
+    int y2v[256][256];
+    int y2u[256][256];
 #endif
 
 public:
-  const char *name;  //dev_name
-  int width;
-  int height;
-  int fps;
+    const char *name;  //dev_name
+    int width;
+    int height;
+    int fps;
 
-  int w2;
+    int w2;
 
-  unsigned char *data;
+    unsigned char *data;
 
-  io_method io;
-  int fd;
-  buffer *buffers;
-  int n_buffers;
+    io_method io;
+    int fd;
+    buffer *buffers;
+    int n_buffers;
 
-  int mb, Mb, db, mc, Mc, dc, ms, Ms, ds, mh, Mh, dh, msh, Msh, dsh;
-  bool ha;
+    int mb, Mb, db, mc, Mc, dc, ms, Ms, ds, mh, Mh, dh, msh, Msh, dsh;
+    bool ha;
 
-  //Camera();
-  Camera(const char *name, int w, int h, int fps=30);
-  void  StartCamera(const char *name, int w, int h, int fps=30);
-  ~Camera();
+    //Camera();
+    Camera(const char *name, int w, int h, int fps=30);
+    void  StartCamera(const char *name, int w, int h, int fps=30);
+    ~Camera();
 
-  unsigned char *Get();    //deprecated
-  bool Update(unsigned int t=100, int timeout_ms=500); //better  (t=0.1ms, in usecs)
-  bool Update(Camera *c2, unsigned int t=100, int timeout_ms=500);
+    unsigned char *Get();    //deprecated
+    bool Update(unsigned int t=100, int timeout_ms=500); //better  (t=0.1ms, in usecs)
+    bool Update(Camera *c2, unsigned int t=100, int timeout_ms=500);
 
 #ifdef USE_OPENCV
-  void toIplImage(IplImage *im);
-  void toGrayScaleIplImage(IplImage *im);
-  void toGrayScaleMat(cv::Mat& im);
-  void toMat (cv::Mat& im, double& ts);
+    void toIplImage(IplImage *im);
+    void toGrayScaleIplImage(IplImage *im);
+    void toGrayScaleMat(cv::Mat& im);
+    void toMat (cv::Mat& im, double& ts);
 #endif
 
 
-  void StopCam();
+    void StopCam();
 
-  int minBrightness();
-  int maxBrightness();
-  int defaultBrightness();
-  int minContrast();
-  int maxContrast();
-  int defaultContrast();
-  int minSaturation();
-  int maxSaturation();
-  int defaultSaturation();
-  int minHue();
-  int maxHue();
-  int defaultHue();
-  bool isHueAuto();
-  int minSharpness();
-  int maxSharpness();
-  int defaultSharpness();
+    int minBrightness();
+    int maxBrightness();
+    int defaultBrightness();
+    int minContrast();
+    int maxContrast();
+    int defaultContrast();
+    int minSaturation();
+    int maxSaturation();
+    int defaultSaturation();
+    int minHue();
+    int maxHue();
+    int defaultHue();
+    bool isHueAuto();
+    int minSharpness();
+    int maxSharpness();
+    int defaultSharpness();
 
-  int setBrightness(int v);
-  int setContrast(int v);
-  int setSaturation(int v);
-  int setHue(int v);
-  int setHueAuto(bool v);
-  int setSharpness(int v);
+    int setBrightness(int v);
+    int setContrast(int v);
+    int setSaturation(int v);
+    int setHue(int v);
+    int setHueAuto(bool v);
+    int setSharpness(int v);
 
 
 
