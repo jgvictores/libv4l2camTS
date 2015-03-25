@@ -635,92 +635,33 @@ void Camera::Stop() {
 }
 
 unsigned char *Camera::Get() {
-  struct v4l2_buffer buf;
 
-  switch(io) {
-    case IO_METHOD_READ:
-/*
-    		if (-1 == read (fd, buffers[0].start, buffers[0].length)) {
-            		switch (errno) {
-            		case EAGAIN:
-                    		return 0;
+    struct v4l2_buffer buf;
 
-			case EIO:
+    CLEAR(buf);
 
-
-			default:
-				errno_exit ("read");
-			}
-		}
-
-    		process_image (buffers[0].start);
-*/
-      break;
-
-    case IO_METHOD_MMAP:
-      CLEAR(buf);
-
-      buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-      buf.memory = V4L2_MEMORY_MMAP;
-      if(-1 == xioctl (fd, VIDIOC_DQBUF, &buf)) {
+    buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    buf.memory = V4L2_MEMORY_MMAP;
+    if(-1 == xioctl (fd, VIDIOC_DQBUF, &buf)) {
         switch (errno) {
-          case EAGAIN:
+        case EAGAIN:
             return 0;
-          case EIO:
-          default:
+        case EIO:
+        default:
             return 0; //errno_exit ("VIDIOC_DQBUF");
         }
-      }
-      gettimeofday(&timestamp,NULL);
+    }
+    gettimeofday(&timestamp,NULL);
 
-      assert(buf.index < (unsigned int)n_buffers);
+    assert(buf.index < (unsigned int)n_buffers);
 
-      memcpy(data, (unsigned char *)buffers[buf.index].start, buffers[buf.index].length);
+    memcpy(data, (unsigned char *)buffers[buf.index].start, buffers[buf.index].length);
 
-      if(-1 == xioctl (fd, VIDIOC_QBUF, &buf))
+    if(-1 == xioctl (fd, VIDIOC_QBUF, &buf))
         return 0; //errno_exit ("VIDIOC_QBUF");
 
     return data;
 
-
-      break;
-
-    case IO_METHOD_USERPTR:
-/*
-		CLEAR (buf);
-
-    		buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    		buf.memory = V4L2_MEMORY_USERPTR;
-
-		if (-1 == xioctl (fd, VIDIOC_DQBUF, &buf)) {
-			switch (errno) {
-			case EAGAIN:
-				return 0;
-
-			case EIO:
-
-
-			default:
-				errno_exit ("VIDIOC_DQBUF");
-			}
-		}
-
-		for (i = 0; i < n_buffers; ++i)
-			if (buf.m.userptr == (unsigned long) buffers[i].start
-			    && buf.length == buffers[i].length)
-				break;
-
-		assert (i < n_buffers);
-
-    		process_image ((void *) buf.m.userptr);
-
-		if (-1 == xioctl (fd, VIDIOC_QBUF, &buf))
-			errno_exit ("VIDIOC_QBUF");
-*/
-      break;
-  }
-
-  return 0;
 }
 
 bool Camera::Update(unsigned int t, int timeout_ms) {
