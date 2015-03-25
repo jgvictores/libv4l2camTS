@@ -12,7 +12,7 @@
 
 #define SOURCE_0 0
 #define SOURCE_1 1
-#define FPS 14
+#define FPS 20
 
 using namespace std;
 using namespace cv;
@@ -34,6 +34,10 @@ int main() {
     double width_1 = capture_1.get(CV_CAP_PROP_FRAME_WIDTH);
     double height_1 = capture_1.get(CV_CAP_PROP_FRAME_HEIGHT);
 
+    // print camera frame size
+    cout << "Camera properties\n";
+    cout << "width_0 = " << width_0 << endl <<"height_0 = "<< height_0 << endl;
+    cout << "width_1 = " << width_1 << endl <<"height_1 = "<< height_1 << endl;
 
     capture_0.release();
     capture_1.release();
@@ -42,13 +46,11 @@ int main() {
     Camera c1("/dev/video1", width_1, height_1, FPS);  //-- optional fps at end, set 14 for minoru
 
 
-    string FILENAME_VIDEO_0 = "./output/feed_0_.avi";
-    string FILENAME_VIDEO_1 = "./output/feed_1_.avi";
+    string FILENAME_VIDEO_0 = "feed_0_.avi";
+    string FILENAME_VIDEO_1 = "feed_1_.avi";
 
     // Create the video writer
     cv::VideoWriter video_0(FILENAME_VIDEO_0, CV_FOURCC('X','V','I','D'), FPS, cv::Size((int)width_0,(int)height_0) );
-    cout << "HERE!!!!!!!!!!!  \n\n";
-
     cv::VideoWriter video_1(FILENAME_VIDEO_1, CV_FOURCC('X','V','I','D'), FPS, cv::Size((int)width_1,(int)height_1) );
 
 
@@ -59,8 +61,6 @@ int main() {
 
     cv::Mat frame_1 = cv::Mat::zeros(height_1, width_1, CV_8UC3);
     double ts1;
-
-    cout << "here\n\n";
 
     //grab key declarations
     char k;
@@ -88,8 +88,8 @@ int main() {
         video_1.write(frame_1);
 
 
-        printf("c0 [%f] %d %d\n",  ts0, frame_0.rows, frame_0.cols );
-        printf("c1 [%f] %d %d\n",  ts1, frame_1.rows, frame_1.cols );
+    //    printf("c0 [%f] %d %d\n",  ts0, frame_0.rows, frame_0.cols );
+    //    printf("c1 [%f] %d %d\n",  ts1, frame_1.rows, frame_1.cols );
 
         cv::imshow("Frame 0", frame_0);
         cv::imshow("Frame 1", frame_1);
