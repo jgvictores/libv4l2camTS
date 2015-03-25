@@ -1,3 +1,5 @@
+// -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
+
 /*
  * Copyright (C) 2009 Giacomo Spigler
  * 2013 - George Jordanov - improve in performance for HSV conversion and improvements
@@ -6,8 +8,8 @@
  * CopyPolicy: Released under the terms of the GNU GPL v3.0.
  */
 
-#ifndef __LIBCAM__H__
-#define __LIBCAM__H__
+#ifndef __CAMERA__HPP__
+#define __CAMERA__HPP__
 
 #define USE_OPENCV 0
 #define USE_LOOKUP 1
@@ -16,8 +18,6 @@
 #include <cv.h>
 #include "opencv2/core/core.hpp"
 #endif
-
-
 
 struct buffer {
         void *                  start;
@@ -29,9 +29,6 @@ typedef enum {
 	IO_METHOD_MMAP,
 	IO_METHOD_USERPTR
 } io_method;
-
-
-
 
 
 class Camera {
@@ -120,12 +117,7 @@ public:
     int setHueAuto(bool v);
     int setSharpness(int v);
 
-
-
 };
 
 
-
-
-
-#endif
+#endif  // __CAMERA__HPP__
