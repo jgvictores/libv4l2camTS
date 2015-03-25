@@ -22,8 +22,6 @@ class CameraThread : public yarp::os::Thread {
 
     private:
         Camera* c;
-        cv::Mat m;
-        double ts;
 };
 
 }  // namespace scr
