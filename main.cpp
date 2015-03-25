@@ -1,21 +1,15 @@
-/*
- * Copyright (C) 2009 Giacomo Spigler
- * 2015 - Juan G Victores - enable timestamp on toMat
- * CopyPolicy: Released under the terms of the GNU GPL v3.0.
- */
+// -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
 #include <stdio.h>
-#include "CameraThread.hpp"
-#include "opencv/cv.h"
-#include "opencv/highgui.h"
 #include <string>
+
+#include "CameraThread.hpp"
+
+#include "opencv/highgui.h"
 
 #define SOURCE_0 0
 #define SOURCE_1 1
 #define FPS 20
-
-using namespace std;
-using namespace cv;
 
 int main() {
 
@@ -23,7 +17,7 @@ int main() {
     cv::VideoCapture capture_1(SOURCE_1);
 
     if(!capture_0.isOpened() || !capture_1.isOpened() ){
-        cerr << "[ERROR] Cannot extract images from video" << endl;
+        std::cerr << "[ERROR] Cannot extract images from video" << std::endl;
         return -1;
     }
 
@@ -35,9 +29,9 @@ int main() {
     double height_1 = capture_1.get(CV_CAP_PROP_FRAME_HEIGHT);
 
     // print camera frame size
-    cout << "Camera properties\n";
-    cout << "width_0 = " << width_0 << endl <<"height_0 = "<< height_0 << endl;
-    cout << "width_1 = " << width_1 << endl <<"height_1 = "<< height_1 << endl;
+    std::cout << "Camera properties\n";
+    std::cout << "width_0 = " << width_0 << std::endl <<"height_0 = "<< height_0 << std::endl;
+    std::cout << "width_1 = " << width_1 << std::endl <<"height_1 = "<< height_1 << std::endl;
 
     capture_0.release();
     capture_1.release();
@@ -48,8 +42,8 @@ int main() {
     c0.start();
     c1.start();
 
-    string FILENAME_VIDEO_0 = "feed_0_.avi";
-    string FILENAME_VIDEO_1 = "feed_1_.avi";
+    std::string FILENAME_VIDEO_0 = "feed_0_.avi";
+    std::string FILENAME_VIDEO_1 = "feed_1_.avi";
 
     // Create the video writer
     cv::VideoWriter video_0(FILENAME_VIDEO_0, CV_FOURCC('X','V','I','D'), FPS, cv::Size((int)width_0,(int)height_0) );
@@ -95,7 +89,7 @@ int main() {
             c0.stop();
             c1.stop();
             cv::destroyAllWindows();
-            cout << "[INFO] Quitting program!" << endl;
+            std::cout << "[INFO] Quitting program!" << std::endl;
             break;
         }
 
