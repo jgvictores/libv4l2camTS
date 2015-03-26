@@ -80,8 +80,6 @@ public:
     ~Camera();
 
     unsigned char *Get();
-    bool Update(unsigned int t=100, int timeout_ms=500); //better  (t=0.1ms, in usecs)
-    bool Update(Camera *c2, unsigned int t=100, int timeout_ms=500);
 
     void StopCam();
 

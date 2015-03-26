@@ -633,44 +633,6 @@ unsigned char *Camera::Get() {
 
 }
 
-bool Camera::Update(unsigned int t, int timeout_ms) {
-  bool grabbed = false;
-  int grab_time_uS = 0;
-  while (!grabbed) {
-    if ((!grabbed) && (this->Get()!=0)) grabbed = true;
-    if (!grabbed) {
-      usleep(t);
-      grab_time_uS+=(int)t;
-      if (grab_time_uS > timeout_ms * 1000) {
-        break;
-      }
-    }
-  }
-
-  return grabbed;
-
-}
-
-bool Camera::Update(Camera *c2, unsigned int t, int timeout_ms) {
-  bool left_grabbed = false;
-  bool right_grabbed = false;
-  int grab_time_uS = 0;
-  while (!(left_grabbed && right_grabbed)) {
-    if ((!left_grabbed) && (this->Get()!=0)) left_grabbed = true;
-    if ((!right_grabbed) && (c2->Get()!=0)) right_grabbed = true;
-    if (!(left_grabbed && right_grabbed)) {
-      usleep(t);
-      grab_time_uS+=(int)t;
-      if (grab_time_uS > timeout_ms * 1000) {
-        break;
-      }
-    }
-  }
-
-  return left_grabbed & right_grabbed;
-
-}
-
 int Camera::minBrightness() {
   return mb;
 }
