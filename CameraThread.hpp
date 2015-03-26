@@ -27,7 +27,6 @@ class CameraThread : public yarp::os::Thread {
         }
         void run();
         void getRawData(unsigned char *data, double& timestamp);
-        bool gotFirstFrame();
 
     private:
         Camera* c;

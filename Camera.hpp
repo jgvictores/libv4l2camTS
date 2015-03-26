@@ -74,7 +74,6 @@ public:
     void  StartCamera(const char *name, int w, int h, int fps=30);
     ~Camera();
 
-
     bool getRawData(unsigned char *data, double& timestamp);
 
     void StopCam();

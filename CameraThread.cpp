@@ -14,10 +14,6 @@ void CameraThread::run() {
     }
 }
 
-bool CameraThread::gotFirstFrame() {
-    return firstFrame;
-}
-
 void CameraThread::getRawData(unsigned char *data, double& timestamp) {
     ready.wait();
     timestamp = ts;

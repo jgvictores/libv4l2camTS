@@ -43,10 +43,8 @@ int SyncedCameraRecorder::main()
     scr::ImageConverter imageConverter0(width_0,height_0);
     scr::ImageConverter imageConverter1(width_1,height_1);
 
-    scr::CameraThread c0("/dev/video0", width_0, height_0, FPS);  //-- optional fps at end, set 14 for minoru
-    scr::CameraThread c1("/dev/video1", width_1, height_1, FPS);  //-- optional fps at end, set 14 for minoru
-    c0.start();
-    c1.start();
+    scr::Camera c0("/dev/video0", width_0, height_0, FPS);  //-- optional fps at end, set 14 for minoru
+    scr::Camera c1("/dev/video1", width_1, height_1, FPS);  //-- optional fps at end, set 14 for minoru
 
     std::string FILENAME_VIDEO_0 = "feed_0_.avi";
     std::string FILENAME_VIDEO_1 = "feed_1_.avi";
@@ -69,8 +67,8 @@ int SyncedCameraRecorder::main()
     //grab key declarations
     char k;
 
-    while( ! c0.gotFirstFrame() );  //-- Returns false until got first image-
-    while( ! c1.gotFirstFrame() );  //-- Returns false until got first image-
+    while( ! c0.getRawData(raw_frame_0, ts0) );  //-- Returns false until got first image-
+    while( ! c1.getRawData(raw_frame_1, ts1) );  //-- Returns false until got first image-
 
 #ifdef TIMING
     timeval timestampStructure;
@@ -82,8 +80,10 @@ int SyncedCameraRecorder::main()
     while(TRUE){
 
         // update
-        c0.getRawData(raw_frame_0, ts0);
-        c1.getRawData(raw_frame_1, ts1);
+        if( ! c0.getRawData(raw_frame_0, ts0) )
+            continue;
+        if( ! c1.getRawData(raw_frame_1, ts1) )
+            continue;
 
         // check if timestamps are close enough
         if( fabs(ts0-ts1) > (0.020) )
@@ -107,8 +107,8 @@ int SyncedCameraRecorder::main()
         if (k == 27){ // ESC
             free(raw_frame_0);
             free(raw_frame_1);
-            c0.stop();
-            c1.stop();
+            c0.StopCam();
+            c1.StopCam();
             cv::destroyAllWindows();
             std::cout << "[INFO] Quitting program!" << std::endl;
             break;
