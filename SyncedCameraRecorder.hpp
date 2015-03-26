@@ -8,6 +8,7 @@
 #include <stdio.h>
 
 #include "CameraThread.hpp"
+#include "ImageConverter.hpp"
 
 #include "opencv/highgui.h"
 

@@ -20,7 +20,8 @@ void CameraThread::run() {
 }
 
 bool CameraThread::getMat(cv::Mat& im, double& ts) {
-  return c->getMat(im,ts);
+  //return c->getMat(im,ts);
+    return true;
 }
 
 }  // namespace scr

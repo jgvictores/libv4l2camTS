@@ -59,21 +59,12 @@ private:
     void init_read(unsigned int buffer_size);
 
     bool initialised;
-#ifdef USE_LOOKUP
-    void genYUVtoRGBLookups();
-    unsigned char yv[256][256];
-    unsigned char yu[256][256];
-    int y2v[256][256];
-    int y2u[256][256];
-#endif
 
 public:
     const char *name;  //dev_name
     int width;
     int height;
     int fps;
-
-    int w2;
 
     io_method io;
     int fd;
@@ -91,14 +82,6 @@ public:
     unsigned char *Get();
     bool Update(unsigned int t=100, int timeout_ms=500); //better  (t=0.1ms, in usecs)
     bool Update(Camera *c2, unsigned int t=100, int timeout_ms=500);
-
-#ifdef USE_OPENCV
-    void toIplImage(IplImage *im);
-    void toGrayScaleIplImage(IplImage *im);
-    void toGrayScaleMat(cv::Mat& im);
-    bool getMat(cv::Mat& im, double& ts);
-#endif
-
 
     void StopCam();
 
