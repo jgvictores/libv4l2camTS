@@ -68,6 +68,13 @@ int SyncedCameraRecorder::main()
     while( ! c0.toMat(frame_0,ts0) );  //-- Returns false until got first image-
     while( ! c1.toMat(frame_1,ts1) );  //-- Returns false until got first image-
 
+#ifdef TIMING
+    timeval timestampStructure;
+    gettimeofday(&timestampStructure,NULL);
+    double last = double(timestampStructure.tv_sec + timestampStructure.tv_usec*1e-6);
+    double frameCounter = 0;
+#endif  // TIMING
+
     while(TRUE){
 
         // conversion
@@ -98,6 +105,18 @@ int SyncedCameraRecorder::main()
             std::cout << "[INFO] Quitting program!" << std::endl;
             break;
         }
+
+#ifdef TIMING
+        gettimeofday(&timestampStructure,NULL);
+        double now = double(timestampStructure.tv_sec + timestampStructure.tv_usec*1e-6);
+        if( (now - last) > 1 ) {  //-- every second
+            printf("Got %f synced frames in past second.\n",frameCounter);
+            last = now;
+            frameCounter = 0;
+        } else {
+            frameCounter++;
+        }
+#endif  // TIMING
 
     }
 

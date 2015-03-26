@@ -15,6 +15,13 @@
 #define SOURCE_1 1
 #define FPS 20
 
+#define TIMING
+
+#ifdef TIMING
+#include <sys/time.h>
+#endif  // TIMING
+
+
 namespace scr
 {
 
