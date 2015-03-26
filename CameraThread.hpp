@@ -8,6 +8,7 @@
 #include "Camera.hpp"
 
 #include <yarp/os/Thread.h>
+#include <yarp/os/Semaphore.h>
 
 #include <unistd.h>  //-- usleep
 
@@ -16,14 +17,25 @@ namespace scr
 
 class CameraThread : public yarp::os::Thread {
     public:
-        CameraThread(const char *name, int w, int h, int fps=30);
-        ~CameraThread();
+        CameraThread(const char *n, int w, int h, int f)  {
+            c = new Camera(n,w,h,f);
+            name = n;
+            width = w;
+            height = h;
+            raw_frame = (unsigned char *)malloc(h*w*4);
+            gotFirstFrame = false;
+        }
         void run();
-
-        bool getMat(cv::Mat& im, double& ts);
+        bool getRawData(unsigned char *data, double& timestamp);
 
     private:
         Camera* c;
+        unsigned char *raw_frame;
+        double ts;
+        yarp::os::Semaphore ready;
+        int width,height;
+        bool gotFirstFrame;
+        std::string name;
 };
 
 }  // namespace scr

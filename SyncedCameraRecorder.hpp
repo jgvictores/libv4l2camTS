@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <unistd.h>
 
-#include "Camera.hpp"
+#include "CameraThread.hpp"
 #include "ImageConverter.hpp"
 
 #include "opencv/highgui.h"

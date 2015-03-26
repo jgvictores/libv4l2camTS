@@ -43,8 +43,10 @@ int SyncedCameraRecorder::main()
     scr::ImageConverter imageConverter0(width_0,height_0);
     scr::ImageConverter imageConverter1(width_1,height_1);
 
-    scr::Camera c0("/dev/video0", width_0, height_0, FPS);  //-- optional fps at end, set 14 for minoru
-    scr::Camera c1("/dev/video1", width_1, height_1, FPS);  //-- optional fps at end, set 14 for minoru
+    scr::CameraThread c0("/dev/video0", width_0, height_0, FPS);  //-- optional fps at end, set 14 for minoru
+    scr::CameraThread c1("/dev/video1", width_1, height_1, FPS);  //-- optional fps at end, set 14 for minoru
+    c0.start();
+    c1.start();
 
     std::string FILENAME_VIDEO_0 = "feed_0_.avi";
     std::string FILENAME_VIDEO_1 = "feed_1_.avi";
@@ -77,28 +79,16 @@ int SyncedCameraRecorder::main()
     double frameCounter = 0;
 #endif  // TIMING
 
-    const unsigned int t=100;
-    const int timeout_ms=500;
     while(TRUE){
 
         // update
-        bool left_grabbed = false;
-        bool right_grabbed = false;
-        int grab_time_uS = 0;
-        while (!(left_grabbed && right_grabbed)) {
-          if ((!left_grabbed) && (!c0.getRawData(raw_frame_0, ts0))) left_grabbed = true;
-          if ((!right_grabbed) && (!c1.getRawData(raw_frame_1, ts1))) right_grabbed = true;
-          if (!(left_grabbed && right_grabbed)) {
-            usleep(t);
-            grab_time_uS+=(int)t;
-            if (grab_time_uS > timeout_ms * 1000) {
-              break;
-            }
-          }
-        }
+        if( ! c0.getRawData(raw_frame_0, ts0) )
+            continue;
+        if( ! c1.getRawData(raw_frame_1, ts1) )
+            continue;
 
         // check if timestamps are close enough
-        if( fabs(ts0-ts1) > (0.010) )
+        if( fabs(ts0-ts1) > (0.0075) )
             continue;
 
         // conversion
@@ -115,19 +105,19 @@ int SyncedCameraRecorder::main()
         cv::imshow("Frame 0", frame_0);
         cv::imshow("Frame 1", frame_1);
 
-
         k = cv::waitKey(1);
         if (k == 27){ // ESC
             free(raw_frame_0);
             free(raw_frame_1);
-            c0.StopCam();
-            c1.StopCam();
+            c0.stop();
+            c1.stop();
             cv::destroyAllWindows();
             std::cout << "[INFO] Quitting program!" << std::endl;
             break;
         }
 
 #ifdef TIMING
+
         gettimeofday(&timestampStructure,NULL);
         double now = double(timestampStructure.tv_sec + timestampStructure.tv_usec*1e-6);
         if( (now - last) > 1 ) {  //-- every second

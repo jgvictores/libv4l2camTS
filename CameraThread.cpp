@@ -5,22 +5,21 @@
 namespace scr
 {
 
-CameraThread::CameraThread(const char *name, int w, int h, int fps) {
-    c = new Camera(name, w, h, fps);
-}
-
-CameraThread::~CameraThread() {
-            delete c;
-}
-
 void CameraThread::run() {
-/*    while( ! this->isStopping() ) {
-        c->Get();
-    }*/
+    while( ! this->isStopping() ) {
+        ready.wait();
+        int ret = c->getRawData(raw_frame,ts);
+        ready.post();
+        if(!gotFirstFrame && ret) gotFirstFrame = true;
+    }
 }
 
-bool CameraThread::getMat(cv::Mat& im, double& ts) {
-  //return c->getMat(im,ts);
+bool CameraThread::getRawData(unsigned char *data, double& timestamp) {
+    if (!gotFirstFrame) return false;
+    ready.wait();
+    timestamp = ts;
+    memcpy(data, raw_frame, height*width*4);
+    ready.post();
     return true;
 }
 
