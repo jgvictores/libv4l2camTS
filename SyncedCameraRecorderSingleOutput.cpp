@@ -49,11 +49,9 @@ int SyncedCameraRecorderSingleOutput::main()
     c1.start();
 
     std::string FILENAME_VIDEO_0 = "feed_0_.avi";
-    std::string FILENAME_VIDEO_1 = "feed_1_.avi";
 
     // Create the video writer
-    cv::VideoWriter video_0(FILENAME_VIDEO_0, CV_FOURCC('X','V','I','D'), FPS, cv::Size((int)width_0,(int)height_0) );
-    cv::VideoWriter video_1(FILENAME_VIDEO_1, CV_FOURCC('X','V','I','D'), FPS, cv::Size((int)width_1,(int)height_1) );
+    cv::VideoWriter video_0(FILENAME_VIDEO_0, CV_FOURCC('X','V','I','D'), FPS, cv::Size(width_0+width_1,height_0) );
 
 
     // declarations
@@ -65,6 +63,8 @@ int SyncedCameraRecorderSingleOutput::main()
     unsigned char *raw_frame_1 = (unsigned char *)malloc(height_1*width_1*4);
     cv::Mat frame_1 = cv::Mat::zeros(height_1, width_1, CV_8UC3);
     double ts1;
+
+    cv::Mat frame_single = cv::Mat::zeros(height_0, width_0+width_1, CV_8UC3);
 
     //grab key declarations
     char k;
@@ -79,32 +79,37 @@ int SyncedCameraRecorderSingleOutput::main()
     double frameCounter = 0;
 #endif  // TIMING
 
-    while(TRUE){
+    for(int i=0;i<5000;i++){
 
         // update
         c0.getRawData(raw_frame_0, ts0);
         c1.getRawData(raw_frame_1, ts1);
 
         // check if timestamps are close enough
-        if( fabs(ts0-ts1) > (0.020) )
+        if( fabs(ts0-ts1) > (0.010) )
             continue;
 
         // conversion
         imageConverter0.toMat(raw_frame_0,frame_0);
         imageConverter1.toMat(raw_frame_1,frame_1);
 
+        // merge
+        cv::Mat left(frame_single, cv::Rect(0, 0, width_0, height_0)); // Copy constructor
+        frame_0.copyTo(left);
+        cv::Mat right(frame_single, cv::Rect(width_0, 0, width_1, height_1)); // Copy constructor
+        frame_1.copyTo(right);
+
         // Save frame to video
-        video_0.write(frame_0);
-        video_1.write(frame_1);
+        video_0.write(frame_single);
 
         //printf("c0 [%f] %d %d\n",  ts0, frame_0.rows, frame_0.cols );
         //printf("c1 [%f] %d %d\n",  ts1, frame_1.rows, frame_1.cols );
 
-        cv::imshow("Frame 0", frame_0);
-        cv::imshow("Frame 1", frame_1);
+        /*cv::imshow("Frame Single", frame_single);
 
         k = cv::waitKey(1);
         if (k == 27){ // ESC
+            video_0.release();
             free(raw_frame_0);
             free(raw_frame_1);
             c0.stop();
@@ -112,7 +117,7 @@ int SyncedCameraRecorderSingleOutput::main()
             cv::destroyAllWindows();
             std::cout << "[INFO] Quitting program!" << std::endl;
             break;
-        }
+        }*/
 
 #ifdef TIMING
 
@@ -128,6 +133,14 @@ int SyncedCameraRecorderSingleOutput::main()
 #endif  // TIMING
 
     }
+
+    video_0.release();
+    free(raw_frame_0);
+    free(raw_frame_1);
+    c0.stop();
+    c1.stop();
+    cv::destroyAllWindows();
+    std::cout << "[INFO] Quitting program!" << std::endl;
 
     return 0;
 }
