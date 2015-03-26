@@ -11,7 +11,17 @@ find_package(YARP REQUIRED)
 # Include any directories needed for YARP
 include_directories(${YARP_INCLUDE_DIRS})
 
-# Set up our main executable.
-add_executable(syncedCameraRecorder main.cpp Camera.cpp CameraThread.cpp ImageConverter.cpp SyncedCameraRecorder.cpp Camera.hpp CameraThread.hpp ImageConverter.hpp SyncedCameraRecorder.hpp)
-target_link_libraries(syncedCameraRecorder ${OpenCV_LIBS} ${YARP_LIBRARIES} )
+add_library(CameraLib Camera.cpp Camera.hpp)
+
+add_library(CameraThreadLib CameraThread.cpp CameraThread.hpp)
+target_link_libraries(CameraThreadLib ${YARP_LIBRARIES})
+
+add_library(ImageConverterLib ImageConverter.cpp ImageConverter.hpp)
+
+# Set up our main executables.
+add_executable(syncedCameraRecorder main.cpp SyncedCameraRecorder.cpp SyncedCameraRecorder.hpp)
+target_link_libraries(syncedCameraRecorder ${OpenCV_LIBS} CameraLib CameraThreadLib ImageConverterLib)
+
+add_executable(syncedCameraRecorderSingleOutput mainSingleOutput.cpp SyncedCameraRecorderSingleOutput.cpp SyncedCameraRecorderSingleOutput.hpp)
+target_link_libraries(syncedCameraRecorderSingleOutput ${OpenCV_LIBS} CameraLib CameraThreadLib ImageConverterLib)
 
