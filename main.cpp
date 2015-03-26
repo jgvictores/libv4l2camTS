@@ -5,9 +5,6 @@
 #include "SyncedCameraRecorder.hpp"
 
 int main() {
-
     scr::SyncedCameraRecorder syncedCameraRecorder;
-    syncedCameraRecorder.main();
-
-    return 0;
+    return syncedCameraRecorder.main();
 }

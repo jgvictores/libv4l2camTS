@@ -12,8 +12,8 @@ bool SyncedCameraRecorder::discoverWidthHeight()
 
     if(!capture_0.isOpened() || !capture_1.isOpened() )
     {
-        fprintf(stderr,"[ERROR] Cannot extract images from video\n");
-        return -1;
+        fprintf(stderr,"[ERROR] Cannot extract images from video for discoverWidthHeight.\n");
+        return false;
     }
 
     // Get the properties from the camera
@@ -32,11 +32,13 @@ bool SyncedCameraRecorder::discoverWidthHeight()
 
     capture_0.release();
     capture_1.release();
+    return true;
 }
 
 int SyncedCameraRecorder::main()
 {
-    this->discoverWidthHeight();
+    if( ! this->discoverWidthHeight() )
+        return 1;
 
     scr::CameraThread c0("/dev/video0", width_0, height_0, FPS);  //-- optional fps at end, set 14 for minoru
     scr::CameraThread c1("/dev/video1", width_1, height_1, FPS);  //-- optional fps at end, set 14 for minoru
@@ -63,11 +65,14 @@ int SyncedCameraRecorder::main()
     //grab key declarations
     char k;
 
+    while( ! c0.toMat(frame_0,ts0) );  //-- Returns false until got first image-
+    while( ! c1.toMat(frame_1,ts1) );  //-- Returns false until got first image-
+
     while(TRUE){
 
         // conversion
-        if( ! c0.toMat(frame_0,ts0) ) continue;  //-- Returns false until got first image-
-        if( ! c1.toMat(frame_1,ts1) ) continue;  //-- Returns false until got first image-
+        c0.toMat(frame_0,ts0);
+        c1.toMat(frame_1,ts1);
 
         // check if timestamps are close enough
         if( fabs(ts0-ts1) > (0.020) )
