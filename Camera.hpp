@@ -96,7 +96,7 @@ public:
     void toIplImage(IplImage *im);
     void toGrayScaleIplImage(IplImage *im);
     void toGrayScaleMat(cv::Mat& im);
-    bool toMat(cv::Mat& im, double& ts);
+    bool getMat(cv::Mat& im, double& ts);
 #endif
 
 

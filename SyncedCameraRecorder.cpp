@@ -65,8 +65,8 @@ int SyncedCameraRecorder::main()
     //grab key declarations
     char k;
 
-    while( ! c0.toMat(frame_0,ts0) );  //-- Returns false until got first image-
-    while( ! c1.toMat(frame_1,ts1) );  //-- Returns false until got first image-
+    while( ! c0.getMat(frame_0,ts0) );  //-- Returns false until got first image-
+    while( ! c1.getMat(frame_1,ts1) );  //-- Returns false until got first image-
 
 #ifdef TIMING
     timeval timestampStructure;
@@ -78,8 +78,8 @@ int SyncedCameraRecorder::main()
     while(TRUE){
 
         // conversion
-        c0.toMat(frame_0,ts0);
-        c1.toMat(frame_1,ts1);
+        c0.getMat(frame_0,ts0);
+        c1.getMat(frame_1,ts1);
 
         // check if timestamps are close enough
         if( fabs(ts0-ts1) > (0.020) )

@@ -795,7 +795,7 @@ void Camera::toGrayScaleIplImage(IplImage *l){
     }
 }
 
-bool Camera::toMat(cv::Mat& m, double& ts) {
+bool Camera::getMat(cv::Mat& m, double& ts) {
 
     if ( ! this->gotFirstImage ) return false;
 

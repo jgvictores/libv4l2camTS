@@ -20,7 +20,7 @@ class CameraThread : public yarp::os::Thread {
         ~CameraThread();
         void run();
 
-        bool toMat(cv::Mat& im, double& ts);
+        bool getMat(cv::Mat& im, double& ts);
 
     private:
         Camera* c;
