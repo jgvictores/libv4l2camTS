@@ -15,12 +15,12 @@
 #define USE_OPENCV
 #define USE_LOOKUP
 
+#include <sys/time.h>
+
 #ifdef USE_OPENCV
 #include <cv.h>
 #include "opencv2/core/core.hpp"
 #endif
-
-#include <yarp/os/Semaphore.h>
 
 struct buffer {
         void *                  start;
@@ -39,11 +39,6 @@ namespace scr
 class Camera {
 private:
     timeval timestampStructure;
-    bool gotFirstImage;
-
-    yarp::os::Semaphore ready;
-    unsigned char *data;
-    double timestamp;
 
     void Open();
     void Close();
@@ -59,21 +54,12 @@ private:
     void init_read(unsigned int buffer_size);
 
     bool initialised;
-#ifdef USE_LOOKUP
-    void genYUVtoRGBLookups();
-    unsigned char yv[256][256];
-    unsigned char yu[256][256];
-    int y2v[256][256];
-    int y2u[256][256];
-#endif
 
 public:
     const char *name;  //dev_name
     int width;
     int height;
     int fps;
-
-    int w2;
 
     io_method io;
     int fd;
@@ -88,17 +74,8 @@ public:
     void  StartCamera(const char *name, int w, int h, int fps=30);
     ~Camera();
 
-    unsigned char *Get();
-    bool Update(unsigned int t=100, int timeout_ms=500); //better  (t=0.1ms, in usecs)
-    bool Update(Camera *c2, unsigned int t=100, int timeout_ms=500);
 
-#ifdef USE_OPENCV
-    void toIplImage(IplImage *im);
-    void toGrayScaleIplImage(IplImage *im);
-    void toGrayScaleMat(cv::Mat& im);
-    bool getMat(cv::Mat& im, double& ts);
-#endif
-
+    bool getRawData(unsigned char *data, double& timestamp);
 
     void StopCam();
 

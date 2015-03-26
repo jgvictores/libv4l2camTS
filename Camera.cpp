@@ -66,37 +66,8 @@ static int xioctl(int fd, int request, void *arg)
 namespace scr
 {
 
-#ifdef USE_LOOKUP
-void Camera::genYUVtoRGBLookups()
-{
-    int iyv, iyu, iy2v, iy2u;
-    int i, j;
-    for(i=0; i<256; i++){
-        for(j=0; j<256; j++){
-                iyv= i + (1.370705 * (j-128));  //Red
-                iyu= i + (1.732446 * (j-128)); //Blue
-                iy2v= (i/2) - (0.698001 * (j-128));//Green 1/2
-                iy2u= (i/2) - (0.337633 * (j-128));//Green 1/2
-
-                if(iyv > 255) iyv = 255;
-                //if(iy2v + iy2u > 255) { iy2v = 127; iy2u = 128;}
-                if(iyu > 255) iyu = 255;
-                if(iyv < 0) iyv = 0;
-                //if(iy2v + iy2u < 0) { iy2v = 0; iy2u = 0;}
-                if(iyu < 0) iyu = 0;
-                
-                yv[i][j] = (unsigned char) iyv;
-                yu[i][j] = (unsigned char) iyu;
-                //Int
-                y2v[i][j] = iy2v;
-                y2u[i][j] = iy2u;
-        }
-    }
-}
-#endif
 Camera::Camera(const char *n, int w, int h, int f) {
     this->initialised = false;
-    this->gotFirstImage = false;
     this->StartCamera(n, w, h, f);
 }
 
@@ -108,18 +79,8 @@ void Camera::StartCamera(const char *n, int w, int h, int f) {
         height=h;
         fps=f;
 
-        w2=w/2;
-
-
         io=IO_METHOD_MMAP;
 
-        data=(unsigned char *)malloc(w*h*4);
-        
-#ifdef USE_LOOKUP
-        //Generate Lookup
-        genYUVtoRGBLookups();
-#endif
-        
         this->Open();
         this->Init();  
         this->Start();
@@ -140,7 +101,6 @@ void Camera::StopCam()
     this->UnInit();
     this->Close();
 
-    free(data);
     initialised = false;
   }
 }
@@ -635,7 +595,7 @@ void Camera::Stop() {
 
 }
 
-unsigned char *Camera::Get() {
+bool Camera::getRawData(unsigned char *data, double& timestamp) {
 
     struct v4l2_buffer buf;
 
@@ -646,258 +606,24 @@ unsigned char *Camera::Get() {
     if(-1 == xioctl (fd, VIDIOC_DQBUF, &buf)) {
         switch (errno) {
         case EAGAIN:
-            return 0;
+            return false;
         case EIO:
         default:
-            return 0; //errno_exit ("VIDIOC_DQBUF");
+            return false; //errno_exit ("VIDIOC_DQBUF");
         }
     }
-    gettimeofday(&timestampStructure,NULL);
 
     assert(buf.index < (unsigned int)n_buffers);
 
-    ready.wait();
-    memcpy(data, (unsigned char *)buffers[buf.index].start, buffers[buf.index].length);
-    this->timestamp = double(this->timestampStructure.tv_sec + this->timestampStructure.tv_usec*1e-6);
-    ready.post();
-
     if(-1 == xioctl (fd, VIDIOC_QBUF, &buf))
-        return 0; //errno_exit ("VIDIOC_QBUF");
+        return false; //errno_exit ("VIDIOC_QBUF");
 
-    this->gotFirstImage = true;
-    return data;
-
-}
-
-bool Camera::Update(unsigned int t, int timeout_ms) {
-  bool grabbed = false;
-  int grab_time_uS = 0;
-  while (!grabbed) {
-    if ((!grabbed) && (this->Get()!=0)) grabbed = true;
-    if (!grabbed) {
-      usleep(t);
-      grab_time_uS+=(int)t;
-      if (grab_time_uS > timeout_ms * 1000) {
-        break;
-      }
-    }
-  }
-
-  return grabbed;
-
-}
-
-bool Camera::Update(Camera *c2, unsigned int t, int timeout_ms) {
-  bool left_grabbed = false;
-  bool right_grabbed = false;
-  int grab_time_uS = 0;
-  while (!(left_grabbed && right_grabbed)) {
-    if ((!left_grabbed) && (this->Get()!=0)) left_grabbed = true;
-    if ((!right_grabbed) && (c2->Get()!=0)) right_grabbed = true;
-    if (!(left_grabbed && right_grabbed)) {
-      usleep(t);
-      grab_time_uS+=(int)t;
-      if (grab_time_uS > timeout_ms * 1000) {
-        break;
-      }
-    }
-  }
-
-  return left_grabbed & right_grabbed;
-
-}
-
-#ifdef USE_OPENCV
-void Camera::toIplImage(IplImage *l) {
-  unsigned char *l_=(unsigned char *)l->imageData;
-
-
-  for(int x=0; x<w2; x++) {
-    for(int y=0; y<height; y++) {
-      int y0, y1, u, v; //y0 u y1 v
-
-      int i=(y*w2+x)*4;
-      y0=data[i];
-      u=data[i+1];
-      y1=data[i+2];
-      v=data[i+3];
-
-#ifndef USE_LOOKUP
-      int r, g, b;
-
-      r = y0 + (1.370705 * (v-128));
-      g = y0 - (0.698001 * (v-128)) - (0.337633 * (u-128));
-      b = y0 + (1.732446 * (u-128));
-
-      if(r > 255) r = 255;
-      if(g > 255) g = 255;
-      if(b > 255) b = 255;
-      if(r < 0) r = 0;
-      if(g < 0) g = 0;
-      if(b < 0) b = 0;
-
-      i=(y*l->width+2*x)*3;
-      l_[i] = (unsigned char)(b); //B
-      l_[i+1] = (unsigned char)(g); //G
-      l_[i+2] = (unsigned char)(r); //R
-
-      r = y1 + (1.370705 * (v-128));
-      g = y1 - (0.698001 * (v-128)) - (0.337633 * (u-128));
-      b = y1 + (1.732446 * (u-128));
-
-      if(r > 255) r = 255;
-      if(g > 255) g = 255;
-      if(b > 255) b = 255;
-      if(r < 0) r = 0;
-      if(g < 0) g = 0;
-      if(b < 0) b = 0;
-
-      l_[i+3] = (unsigned char)(b); //B
-      l_[i+4] = (unsigned char)(g); //G
-      l_[i+5] = (unsigned char)(r); //R
-#else
-      int g;
-      i=(y*l->width+2*x)*3;
-      
-      g=y2u[y0][u] + y2v[y0][v];
-      if(g>255){g=255;}
-      if(g<0){g=0;}
-      l_[i] = yu[y0][u];
-      l_[i+1] = g;
-      l_[i+2] = yv[y0][v];
-      
-      g=y2u[y1][u] + y2v[y1][v];
-      if(g>255){g=255;}
-      if(g<0){g=0;}
-      l_[i+3] = yu[y1][u];
-      l_[i+4] = g;
-      l_[i+5] = yv[y1][v];
-#endif
-    }
-  }
-
-}
-void Camera::toGrayScaleIplImage(IplImage *l){
-    unsigned char *l_=(unsigned char *)l->imageData;
-    
-    for (int x = 0; x < w2; x++) {
-        for (int y = 0; y < height; y++) {
-            int y0, y1;
-            
-            int i = (y * w2 + x)*4;
-            y0 = data[i];
-            y1 = data[i + 2];
-
-            i = (y * l->width + 2 * x)*1;
-            l_[i] = (unsigned char) (y0);
-            l_[i + 1] = (unsigned char) (y1);
-        }
-    }
-}
-
-bool Camera::getMat(cv::Mat& m, double& ts) {
-
-    if ( ! this->gotFirstImage ) return false;
-
-    ready.wait();
-
-    ts = this->timestamp;
-
-    unsigned char *m_ = (unsigned char *)(m.data);
-
-    for(int x=0; x<w2; x++) {
-        for(int y=0; y<height; y++) {
-            int y0, y1, u, v; //y0 u y1 v
-
-            int i=(y*w2+x)*4;
-            y0=data[i];
-            u=data[i+1];
-            y1=data[i+2];
-            v=data[i+3];
-            
-#ifndef USE_LOOKUP
-            int r, g, b;
-
-            r = y0 + (1.370705 * (v-128));
-            g = y0 - (0.698001 * (v-128)) - (0.337633 * (u-128));
-            b = y0 + (1.732446 * (u-128));
-
-            if(r > 255) r = 255;
-            if(g > 255) g = 255;
-            if(b > 255) b = 255;
-            if(r < 0) r = 0;
-            if(g < 0) g = 0;
-            if(b < 0) b = 0;
-
-            i = y*m.cols*m.channels() + x*2*m.channels();
-            m_[i] = (unsigned char)(b); //B
-            m_[i+1] = (unsigned char)(g); //G
-            m_[i+2] = (unsigned char)(r); //R
-
-            r = y1 + (1.370705 * (v-128));
-            g = y1 - (0.698001 * (v-128)) - (0.337633 * (u-128));
-            b = y1 + (1.732446 * (u-128));
-
-            if(r > 255) r = 255;
-            if(g > 255) g = 255;
-            if(b > 255) b = 255;
-            if(r < 0) r = 0;
-            if(g < 0) g = 0;
-            if(b < 0) b = 0;
-
-            m_[i+3] = (unsigned char)(b); //B
-            m_[i+4] = (unsigned char)(g); //G
-            m_[i+5] = (unsigned char)(r); //R
-#else
-            int g;
-
-            i = y*m.cols*m.channels() + x*2*m.channels();
-
-            g=y2u[y0][u] + y2v[y0][v];
-            if(g>255){g=255;}
-            if(g<0){g=0;}
-            m_[i] = yu[y0][u];
-            m_[i+1] = (unsigned char)g;
-            m_[i+2] = yv[y0][v];
-
-            g=y2u[y1][u] + y2v[y1][v];
-            if(g>255){g=255;}
-            if(g<0){g=0;}
-            m_[i+3] = yu[y1][u];
-            m_[i+4] = g;
-            m_[i+5] = yv[y1][v];
-#endif
-        }
-    }
-
-    ready.post();
+    gettimeofday(&timestampStructure,NULL);
+    memcpy(data, (unsigned char *)buffers[buf.index].start, buffers[buf.index].length);
+    timestamp = double(this->timestampStructure.tv_sec + this->timestampStructure.tv_usec*1e-6);
 
     return true;
 }
-
-void Camera::toGrayScaleMat(cv::Mat& m)
-{   
-    unsigned char *m_ = (unsigned char *)(m.data);
-    
-    for (int x = 0; x < w2; x++) {
-        for (int y = 0; y < height; y++) {
-            int y0, y1;
-
-            int i = (y * w2 + x)*4;
-            y0 = data[i];
-            y1 = data[i + 2];
-            
-            i = y*m.cols*m.channels() + x*2*m.channels(); 
-            m_[i + 0] = (unsigned char) (y0);
-            m_[i + 1] = (unsigned char) (y1);
-            
-            //More clear in logic but slower solution
-            //m.at<uchar>(y, (2*x)) = (unsigned char) (y0);
-            //m.at<uchar>(y, (2*x)+1) = (unsigned char) (y1);
-        }
-    }
-}
-#endif
 
 int Camera::minBrightness() {
   return mb;
