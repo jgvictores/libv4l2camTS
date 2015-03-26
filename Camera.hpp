@@ -15,12 +15,12 @@
 #define USE_OPENCV
 #define USE_LOOKUP
 
+#include <sys/time.h>
+
 #ifdef USE_OPENCV
 #include <cv.h>
 #include "opencv2/core/core.hpp"
 #endif
-
-#include <yarp/os/Semaphore.h>
 
 struct buffer {
         void *                  start;
@@ -39,11 +39,6 @@ namespace scr
 class Camera {
 private:
     timeval timestampStructure;
-    bool gotFirstImage;
-
-    yarp::os::Semaphore ready;
-    unsigned char *data;
-    double timestamp;
 
     void Open();
     void Close();
@@ -79,7 +74,8 @@ public:
     void  StartCamera(const char *name, int w, int h, int fps=30);
     ~Camera();
 
-    unsigned char *Get();
+
+    bool getRawData(unsigned char *data, double& timestamp);
 
     void StopCam();
 

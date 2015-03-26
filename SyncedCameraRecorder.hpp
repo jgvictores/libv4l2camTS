@@ -5,9 +5,10 @@
 #ifndef __SYNCED_CAMERA_RECORDER__HPP__
 #define __SYNCED_CAMERA_RECORDER__HPP__
 
-#include <stdio.h>
+#include <cstdio>
+#include <unistd.h>
 
-#include "CameraThread.hpp"
+#include "Camera.hpp"
 #include "ImageConverter.hpp"
 
 #include "opencv/highgui.h"

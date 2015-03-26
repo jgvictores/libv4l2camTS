@@ -68,7 +68,6 @@ namespace scr
 
 Camera::Camera(const char *n, int w, int h, int f) {
     this->initialised = false;
-    this->gotFirstImage = false;
     this->StartCamera(n, w, h, f);
 }
 
@@ -82,8 +81,6 @@ void Camera::StartCamera(const char *n, int w, int h, int f) {
 
         io=IO_METHOD_MMAP;
 
-        data=(unsigned char *)malloc(w*h*4);
-        
         this->Open();
         this->Init();  
         this->Start();
@@ -104,7 +101,6 @@ void Camera::StopCam()
     this->UnInit();
     this->Close();
 
-    free(data);
     initialised = false;
   }
 }
@@ -599,7 +595,7 @@ void Camera::Stop() {
 
 }
 
-unsigned char *Camera::Get() {
+bool Camera::getRawData(unsigned char *data, double& timestamp) {
 
     struct v4l2_buffer buf;
 
@@ -610,27 +606,23 @@ unsigned char *Camera::Get() {
     if(-1 == xioctl (fd, VIDIOC_DQBUF, &buf)) {
         switch (errno) {
         case EAGAIN:
-            return 0;
+            return false;
         case EIO:
         default:
-            return 0; //errno_exit ("VIDIOC_DQBUF");
+            return false; //errno_exit ("VIDIOC_DQBUF");
         }
     }
-    gettimeofday(&timestampStructure,NULL);
 
     assert(buf.index < (unsigned int)n_buffers);
 
-    ready.wait();
-    memcpy(data, (unsigned char *)buffers[buf.index].start, buffers[buf.index].length);
-    this->timestamp = double(this->timestampStructure.tv_sec + this->timestampStructure.tv_usec*1e-6);
-    ready.post();
-
     if(-1 == xioctl (fd, VIDIOC_QBUF, &buf))
-        return 0; //errno_exit ("VIDIOC_QBUF");
+        return false; //errno_exit ("VIDIOC_QBUF");
 
-    this->gotFirstImage = true;
-    return data;
+    gettimeofday(&timestampStructure,NULL);
+    memcpy(data, (unsigned char *)buffers[buf.index].start, buffers[buf.index].length);
+    timestamp = double(this->timestampStructure.tv_sec + this->timestampStructure.tv_usec*1e-6);
 
+    return true;
 }
 
 int Camera::minBrightness() {

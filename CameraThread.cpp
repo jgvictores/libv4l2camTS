@@ -14,9 +14,9 @@ CameraThread::~CameraThread() {
 }
 
 void CameraThread::run() {
-    while( ! this->isStopping() ) {
+/*    while( ! this->isStopping() ) {
         c->Get();
-    }
+    }*/
 }
 
 bool CameraThread::getMat(cv::Mat& im, double& ts) {
