@@ -69,8 +69,8 @@ int SyncedCameraRecorder::main()
     //grab key declarations
     char k;
 
-    while( ! c0.getRawData(raw_frame_0,ts0) );  //-- Returns false until got first image-
-    while( ! c1.getRawData(raw_frame_1,ts1) );  //-- Returns false until got first image-
+    while( ! c0.gotFirstFrame() );  //-- Returns false until got first image-
+    while( ! c1.gotFirstFrame() );  //-- Returns false until got first image-
 
 #ifdef TIMING
     timeval timestampStructure;
@@ -82,13 +82,11 @@ int SyncedCameraRecorder::main()
     while(TRUE){
 
         // update
-        if( ! c0.getRawData(raw_frame_0, ts0) )
-            continue;
-        if( ! c1.getRawData(raw_frame_1, ts1) )
-            continue;
+        c0.getRawData(raw_frame_0, ts0);
+        c1.getRawData(raw_frame_1, ts1);
 
         // check if timestamps are close enough
-        if( fabs(ts0-ts1) > (0.0075) )
+        if( fabs(ts0-ts1) > (0.020) )
             continue;
 
         // conversion

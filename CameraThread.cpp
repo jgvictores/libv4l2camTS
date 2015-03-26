@@ -10,17 +10,19 @@ void CameraThread::run() {
         ready.wait();
         int ret = c->getRawData(raw_frame,ts);
         ready.post();
-        if(!gotFirstFrame && ret) gotFirstFrame = true;
+        if(!firstFrame && ret) firstFrame = true;
     }
 }
 
-bool CameraThread::getRawData(unsigned char *data, double& timestamp) {
-    if (!gotFirstFrame) return false;
+bool CameraThread::gotFirstFrame() {
+    return firstFrame;
+}
+
+void CameraThread::getRawData(unsigned char *data, double& timestamp) {
     ready.wait();
     timestamp = ts;
     memcpy(data, raw_frame, height*width*4);
     ready.post();
-    return true;
 }
 
 }  // namespace scr

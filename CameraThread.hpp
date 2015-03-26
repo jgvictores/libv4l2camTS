@@ -23,10 +23,11 @@ class CameraThread : public yarp::os::Thread {
             width = w;
             height = h;
             raw_frame = (unsigned char *)malloc(h*w*4);
-            gotFirstFrame = false;
+            firstFrame = false;
         }
         void run();
-        bool getRawData(unsigned char *data, double& timestamp);
+        void getRawData(unsigned char *data, double& timestamp);
+        bool gotFirstFrame();
 
     private:
         Camera* c;
@@ -34,7 +35,7 @@ class CameraThread : public yarp::os::Thread {
         double ts;
         yarp::os::Semaphore ready;
         int width,height;
-        bool gotFirstFrame;
+        bool firstFrame;
         std::string name;
 };
 
