@@ -25,4 +25,13 @@ void CameraThread::getRawData(unsigned char *data, double& timestamp) {
     ready.post();
 }
 
+void CameraThread::onStop() {
+    c->StopCam();
+}
+
+void CameraThread::threadRelease() {
+    //delete c;  //-- Crashes PC.
+    //c = 0;
+}
+
 }  // namespace scr

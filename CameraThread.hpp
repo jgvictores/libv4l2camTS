@@ -25,7 +25,10 @@ class CameraThread : public yarp::os::Thread {
             raw_frame = (unsigned char *)malloc(h*w*4);
             firstFrame = false;
         }
-        void run();
+        virtual void run();
+        virtual void onStop();
+        virtual void threadRelease();
+
         void getRawData(unsigned char *data, double& timestamp);
         bool gotFirstFrame();
 
