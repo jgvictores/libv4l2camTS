@@ -51,8 +51,13 @@ int SyncedCameraRecorderSingleOutput::main()
     std::string FILENAME_VIDEO_0 = "feed_0_.avi";
 
     // Create the video writer
-    cv::VideoWriter video_0(FILENAME_VIDEO_0, CV_FOURCC('X','V','I','D'), FPS, cv::Size(width_0+width_1,height_0) );
-
+    cv::VideoWriter video_0;
+    video_0.open(FILENAME_VIDEO_0, CV_FOURCC('X','V','I','D'), FPS, cv::Size(width_0+width_1,height_0) );
+    //video_0.open(FILENAME_VIDEO_0, CV_FOURCC('M','P','E','G'), FPS, cv::Size(width_0+width_1,height_0) );
+    if (!video_0.isOpened()){
+        fprintf(stderr,"Could not open the output video for write (maybe missing codec): %s\n",FILENAME_VIDEO_0.c_str());
+        return 1;
+    }
 
     // declarations
 
