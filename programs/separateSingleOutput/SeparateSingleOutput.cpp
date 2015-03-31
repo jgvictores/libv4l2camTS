@@ -43,7 +43,7 @@ int SeparateSingleOutput::main(int argc, char *argv[])
         return 1;
     }
     cv::VideoWriter video_1;
-    video_1.open(FILENAME_VIDEO_0, CV_FOURCC('X','V','I','D'), fps, cv::Size(width/2,height) );
+    video_1.open(FILENAME_VIDEO_1, CV_FOURCC('X','V','I','D'), fps, cv::Size(width/2,height) );
     if (!video_1.isOpened()){
         fprintf(stderr,"Could not open the output video for write (maybe missing codec): %s\n",FILENAME_VIDEO_1.c_str());
         return 1;
