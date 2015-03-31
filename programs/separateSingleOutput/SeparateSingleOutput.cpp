@@ -29,6 +29,8 @@ int SeparateSingleOutput::main(int argc, char *argv[])
     printf("Stream properties:\n");
     printf("width = %d\n",width);
     printf("height = %d\n",height);
+    if(fps!=fps) fps = 20;
+    printf("fps = %f\n",fps);
 
     std::string FILENAME_VIDEO_0 = "feed_0.avi";
     std::string FILENAME_VIDEO_1 = "feed_1.avi";
