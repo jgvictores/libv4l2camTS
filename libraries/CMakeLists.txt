@@ -4,11 +4,14 @@ find_package(OpenCV REQUIRED)
 find_package(YARP REQUIRED)
 
 add_library(CameraLib Camera.cpp Camera.hpp)
-set_property(TARGET CameraLib APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${OpenCV_INCLUDE_DIRS})
+set_property(TARGET CameraLib APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}" "${OpenCV_INCLUDE_DIRS}")
 target_link_libraries(CameraLib ${OpenCV_LIBS})
+install(TARGETS CameraLib DESTINATION lib)
 
 add_library(CameraThreadLib CameraThread.cpp CameraThread.hpp)
 target_link_libraries(CameraThreadLib ${YARP_LIBRARIES})
+install(TARGETS CameraThreadLib DESTINATION lib)
 
 add_library(ImageConverterLib ImageConverter.cpp ImageConverter.hpp)
+install(TARGETS ImageConverterLib DESTINATION lib)
 
