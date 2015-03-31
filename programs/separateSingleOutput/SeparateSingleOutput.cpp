@@ -35,7 +35,7 @@ bool SeparateSingleOutput::discoverWidthHeight()
     return true;
 }
 
-int SeparateSingleOutput::main()
+int SeparateSingleOutput::main(int argc, char *argv[])
 {
     if( ! this->discoverWidthHeight() )
         return 1;

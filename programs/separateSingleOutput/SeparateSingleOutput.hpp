@@ -30,7 +30,7 @@ class SeparateSingleOutput {
 
     public:
         bool discoverWidthHeight();
-        int main();
+        int main(int argc, char *argv[]);
 
     private:
         int width_0, width_1, height_0, height_1;

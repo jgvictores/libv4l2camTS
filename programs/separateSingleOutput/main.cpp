@@ -6,5 +6,5 @@
 
 int main(int argc, char *argv[]) {
     scr::SeparateSingleOutput syncedCameraRecorder;
-    return syncedCameraRecorder.main();
+    return syncedCameraRecorder.main(argc,argv);
 }
