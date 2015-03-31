@@ -3,3 +3,5 @@
 add_subdirectory(syncedCameraRecorder)
 add_subdirectory(syncedCameraRecorderSingleOutput)
 
+add_subdirectory(separateSingleOutput)
+
