@@ -4,7 +4,7 @@
 
 #include "SyncedCameraRecorder.hpp"
 
-int main() {
+int main(int argc, char *argv[]) {
     scr::SyncedCameraRecorder syncedCameraRecorder;
     return syncedCameraRecorder.main();
 }

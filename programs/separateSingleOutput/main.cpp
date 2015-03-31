@@ -4,7 +4,7 @@
 
 #include "SeparateSingleOutput.hpp"
 
-int main() {
+int main(int argc, char *argv[]) {
     scr::SeparateSingleOutput syncedCameraRecorder;
     return syncedCameraRecorder.main();
 }
