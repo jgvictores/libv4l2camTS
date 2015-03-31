@@ -17,3 +17,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 add_subdirectory(libraries)
 add_subdirectory(programs)
 
+# uninstall target
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/template/ScrConfigUninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/ScrConfigUninstall.cmake" IMMEDIATE @ONLY)
+
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/ScrConfigUninstall.cmake)
+
