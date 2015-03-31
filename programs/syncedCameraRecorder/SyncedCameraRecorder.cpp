@@ -67,19 +67,22 @@ int SyncedCameraRecorder::main()
     double ts1;
 
     //grab key declarations
-    char k;
+    //char k;
 
     while( ! c0.gotFirstFrame() );  //-- Returns false until got first image-
     while( ! c1.gotFirstFrame() );  //-- Returns false until got first image-
 
-#ifdef TIMING
     timeval timestampStructure;
     gettimeofday(&timestampStructure,NULL);
-    double last = double(timestampStructure.tv_sec + timestampStructure.tv_usec*1e-6);
+    double now = double(timestampStructure.tv_sec + timestampStructure.tv_usec*1e-6);
+    double init = now;
+#ifdef PRINTF_FPS
+    double last = init;
     double frameCounter = 0;
-#endif  // TIMING
+#endif  // PRINTF_FPS
 
-    while(TRUE){
+    //highgui//while(true) {
+    while( now - init < RECORD_SECONDS ) {
 
         // update
         c0.getRawData(raw_frame_0, ts0);
@@ -100,7 +103,7 @@ int SyncedCameraRecorder::main()
         //printf("c0 [%f] %d %d\n",  ts0, frame_0.rows, frame_0.cols );
         //printf("c1 [%f] %d %d\n",  ts1, frame_1.rows, frame_1.cols );
 
-        cv::imshow("Frame 0", frame_0);
+        /*highgui//cv::imshow("Frame 0", frame_0);
         cv::imshow("Frame 1", frame_1);
 
         k = cv::waitKey(1);
@@ -112,20 +115,19 @@ int SyncedCameraRecorder::main()
             cv::destroyAllWindows();
             std::cout << "[INFO] Quitting program!" << std::endl;
             break;
-        }
-
-#ifdef TIMING
+        }*/
 
         gettimeofday(&timestampStructure,NULL);
-        double now = double(timestampStructure.tv_sec + timestampStructure.tv_usec*1e-6);
+        now = double(timestampStructure.tv_sec + timestampStructure.tv_usec*1e-6);
+#ifdef PRINTF_FPS
         if( (now - last) > 1 ) {  //-- every second
-            printf("Got %f synced frames in past second.\n",frameCounter);
+            printf("[%f] %f synced frams in past s.\n",now-init,frameCounter);
             last = now;
             frameCounter = 0;
         } else {
             frameCounter++;
         }
-#endif  // TIMING
+#endif  // PRINTF_FPS
 
     }
 

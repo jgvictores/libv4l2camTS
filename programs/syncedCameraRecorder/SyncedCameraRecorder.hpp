@@ -8,6 +8,8 @@
 #include <cstdio>
 #include <unistd.h>
 
+#include <sys/time.h>
+
 #include "CameraThread.hpp"
 #include "ImageConverter.hpp"
 
@@ -16,12 +18,9 @@
 #define SOURCE_0 0
 #define SOURCE_1 1
 #define FPS 20
+#define RECORD_SECONDS 600
 
-#define TIMING
-
-#ifdef TIMING
-#include <sys/time.h>
-#endif  // TIMING
+#define PRINTF_FPS
 
 
 namespace scr
