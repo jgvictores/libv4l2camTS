@@ -2,8 +2,8 @@
 
 /* Copyright (C) 2015 Juan G Victores & Santiago Morante */
 
-#ifndef __SYNCED_CAMERA_RECORDER_SINLGE_OUTPUT__HPP__
-#define __SYNCED_CAMERA_RECORDER_SINLGE_OUTPUT__HPP__
+#ifndef __SYNCED_CAMERA_RECORDER_SINGLE_OUTPUT__HPP__
+#define __SYNCED_CAMERA_RECORDER_SINGLE_OUTPUT__HPP__
 
 #include <cstdio>
 #include <unistd.h>
@@ -38,5 +38,5 @@ class SyncedCameraRecorderSingleOutput {
 
 }  // namespace scr
 
-#endif  // __SYNCED_CAMERA_RECORDER_SINLGE_OUTPUT__HPP__
+#endif  // __SYNCED_CAMERA_RECORDER_SINGLE_OUTPUT__HPP__
 
